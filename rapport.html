@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Compte rendu d'intervention — France Roleplay</title>
+  <style>
+    *{box-sizing:border-box}
+    body{margin:0;background:#080b12;color:#f4f7fb;font-family:Arial,Helvetica,sans-serif}
+    header{height:76px;display:flex;align-items:center;justify-content:space-between;padding:0 30px;background:#0d121b;border-bottom:1px solid #222b38}
+    header a{color:#cbd5e1;text-decoration:none}
+    main{max-width:900px;margin:auto;padding:30px 20px}
+    .card{background:#101621;border:1px solid #263142;border-radius:15px;padding:24px}
+    h1{margin-top:0}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+    .field{margin-bottom:15px}
+    label{display:block;color:#aab5c5;font-size:13px;margin-bottom:7px}
+    input,textarea{width:100%;border:1px solid #344154;background:#0b1018;color:#fff;border-radius:9px;padding:12px;outline:none}
+    textarea{min-height:110px;resize:vertical}
+    .full{grid-column:1/-1}
+    button{border:0;border-radius:9px;padding:13px 17px;background:#e7edf5;color:#0b1018;font-weight:700;cursor:pointer}
+    .result{margin-top:22px;padding:18px;background:#0b1018;border:1px solid #273244;border-radius:10px;white-space:pre-wrap;line-height:1.6;display:none}
+    @media(max-width:650px){.grid{grid-template-columns:1fr}.full{grid-column:auto}}
+  </style>
+</head>
+<body>
+<header>
+  <strong>Compte rendu d'intervention</strong>
+  <a href="index.html">Retour au tableau de bord</a>
+</header>
+<main>
+  <div class="card">
+    <h1>Compte rendu d'intervention</h1>
+    <div class="grid">
+      <div class="field"><label>Date</label><input id="date" type="date"></div>
+      <div class="field"><label>Heure</label><input id="heure" type="time"></div>
+      <div class="field"><label>Identité de la victime</label><input id="victime"></div>
+      <div class="field"><label>Lieu de l'intervention</label><input id="lieu"></div>
+      <div class="field full"><label>Motif de l'intervention</label><textarea id="motif"></textarea></div>
+      <div class="field full"><label>Observations / bilan</label><textarea id="observations"></textarea></div>
+      <div class="field full"><label>Soins réalisés</label><textarea id="soins"></textarea></div>
+      <div class="field"><label>Transport</label><input id="transport" placeholder="Oui / Non"></div>
+      <div class="field"><label>Destination</label><input id="destination"></div>
+      <div class="field full"><label>Personnel médical</label><input id="personnel"></div>
+    </div>
+    <button onclick="generer()">Générer le compte rendu</button>
+    <div class="result" id="result"></div>
+  </div>
+</main>
+<script>
+function v(id){return document.getElementById(id).value.trim()}
+function generer(){
+  const texte =
+`COMPTE RENDU D'INTERVENTION
+Date : ${v("date")}
+Heure : ${v("heure")}
+
+VICTIME
+Identité : ${v("victime")}
+Lieu : ${v("lieu")}
+
+MOTIF
+${v("motif")}
+
+OBSERVATIONS / BILAN
+${v("observations")}
+
+SOINS RÉALISÉS
+${v("soins")}
+
+TRANSPORT
+Transport : ${v("transport")}
+Destination : ${v("destination")}
+
+PERSONNEL MÉDICAL
+${v("personnel")}`;
+
+  const result=document.getElementById("result");
+  result.textContent=texte;
+  result.style.display="block";
+}
+</script>
+</body>
+</html>

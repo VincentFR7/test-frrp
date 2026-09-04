@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Service Médical — France Roleplay</title>
+  <style>
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family:Arial,Helvetica,sans-serif;
+      background:#080b12;
+      color:#f4f7fb;
+    }
+    button,input{font:inherit}
+    .login{
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+      background:
+        radial-gradient(circle at 50% 20%,rgba(72,102,150,.18),transparent 35%),
+        #080b12;
+    }
+    .login-card{
+      width:min(460px,100%);
+      background:#101621;
+      border:1px solid #273244;
+      border-radius:18px;
+      padding:34px;
+      box-shadow:0 24px 80px rgba(0,0,0,.45);
+    }
+    .logo{
+      width:64px;height:64px;
+      border-radius:14px;
+      object-fit:contain;
+      background:#fff;
+      padding:8px;
+      margin-bottom:22px;
+    }
+    h1{margin:0 0 8px;font-size:27px}
+    .subtitle{color:#96a3b5;margin:0 0 28px;line-height:1.5}
+    label{display:block;color:#c9d2df;font-size:14px;margin-bottom:8px}
+    input{
+      width:100%;
+      padding:14px 15px;
+      border-radius:10px;
+      border:1px solid #344154;
+      background:#0b1018;
+      color:#fff;
+      outline:none;
+    }
+    input:focus{border-color:#6b7f9d}
+    .login-btn{
+      width:100%;
+      margin-top:14px;
+      padding:14px;
+      border:0;
+      border-radius:10px;
+      background:#e7edf5;
+      color:#0b1018;
+      font-weight:700;
+      cursor:pointer;
+    }
+    .login-btn:hover{background:#fff}
+    .error{
+      display:none;
+      margin-top:14px;
+      padding:12px;
+      border-radius:9px;
+      background:#35171b;
+      border:1px solid #71333a;
+      color:#ffb7bd;
+      font-size:14px;
+    }
+    .hint{margin-top:18px;color:#707d90;font-size:12px;line-height:1.5}
+    .dashboard{display:none;min-height:100vh}
+    header{
+      height:76px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:0 30px;
+      border-bottom:1px solid #222b38;
+      background:#0d121b;
+    }
+    .brand{display:flex;align-items:center;gap:12px;font-weight:700}
+    .brand img{width:38px;height:38px;border-radius:9px;background:#fff;padding:5px}
+    .logout{
+      border:1px solid #344154;
+      background:#151c28;
+      color:#cbd5e1;
+      padding:9px 13px;
+      border-radius:8px;
+      cursor:pointer;
+    }
+    main{max-width:1200px;margin:auto;padding:34px 24px}
+    .welcome{margin-bottom:28px}
+    .welcome h2{margin:0 0 7px;font-size:28px}
+    .welcome p{margin:0;color:#8794a7}
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:16px;
+    }
+    .card{
+      background:#101621;
+      border:1px solid #263142;
+      border-radius:14px;
+      padding:20px;
+    }
+    .card-title{color:#8996a8;font-size:12px;font-weight:700;letter-spacing:.08em}
+    .value{font-size:27px;font-weight:700;margin-top:12px}
+    .small{color:#758297;font-size:12px;margin-top:6px}
+    .section{
+      margin-top:18px;
+      display:grid;
+      grid-template-columns:2fr 1fr;
+      gap:16px;
+    }
+    .staff-list{margin-top:15px}
+    .staff{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:13px 0;
+      border-bottom:1px solid #202936;
+    }
+    .staff:last-child{border-bottom:0}
+    .online{color:#7ee2a8;font-size:13px}
+    .report-btn{
+      display:block;
+      width:100%;
+      text-align:center;
+      text-decoration:none;
+      background:#e7edf5;
+      color:#0b1018;
+      padding:14px;
+      border-radius:10px;
+      font-weight:700;
+      margin-top:15px;
+    }
+    .report-btn:hover{background:#fff}
+    @media(max-width:850px){
+      .grid{grid-template-columns:repeat(2,1fr)}
+      .section{grid-template-columns:1fr}
+    }
+    @media(max-width:520px){
+      header{padding:0 16px}
+      main{padding:24px 16px}
+      .grid{grid-template-columns:1fr}
+      .login-card{padding:25px}
+    }
+  </style>
+</head>
+<body>
+
+<section class="login" id="loginScreen">
+  <div class="login-card">
+    <img class="logo" src="https://commons.wikimedia.org/wiki/Special:FilePath/Imgur%20icon.svg" alt="Logo">
+    <h1>Service Médical</h1>
+    <p class="subtitle">France Roleplay — accès réservé au personnel médical autorisé.</p>
+
+    <label for="discordId">ID Discord</label>
+    <input id="discordId" type="text" inputmode="numeric" placeholder="Ex. 1259230726952583258" autocomplete="off">
+    <button class="login-btn" id="loginBtn">Accéder au service</button>
+
+    <div class="error" id="errorBox">Cet ID Discord n'est pas autorisé.</div>
+    <div class="hint">L'ID doit correspondre à un ID présent dans le fichier ID.html.</div>
+  </div>
+</section>
+
+<section class="dashboard" id="dashboard">
+  <header>
+    <div class="brand">
+      <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Imgur%20icon.svg" alt="">
+      <span>Service Médical — France Roleplay</span>
+    </div>
+    <button class="logout" id="logoutBtn">Déconnexion</button>
+  </header>
+
+  <main>
+    <div class="welcome">
+      <h2>Tableau de bord médical</h2>
+      <p>Informations du service et accès aux outils d'intervention.</p>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <div class="card-title">SERVEUR</div>
+        <div class="value" id="serverStatus">En ligne</div>
+        <div class="small">francerplb.shieldcore.io:443</div>
+      </div>
+      <div class="card">
+        <div class="card-title">JOUEURS</div>
+        <div class="value" id="players">—</div>
+        <div class="small">Joueurs actuellement connectés</div>
+      </div>
+      <div class="card">
+        <div class="card-title">EMS</div>
+        <div class="value" id="emsCount">—</div>
+        <div class="small">Personnel médical détecté</div>
+      </div>
+      <div class="card">
+        <div class="card-title">HEURE</div>
+        <div class="value" id="time">—</div>
+        <div class="small">Heure française</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="card">
+        <div class="card-title">EFFECTIFS MÉDICAUX</div>
+        <div class="staff-list" id="staffList">
+          <div class="staff">
+            <span>Détection FiveM à configurer</span>
+            <span class="online">En attente</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">COMPTE RENDU</div>
+        <p class="small" style="font-size:14px;line-height:1.6">
+          Créez rapidement un compte rendu d'intervention médicale.
+        </p>
+        <a class="report-btn" href="rapport.html">Ouvrir le compte rendu</a>
+      </div>
+    </div>
+  </main>
+</section>
+
+<script src="ID.html"></script>
+<script>
+  const loginScreen = document.getElementById("loginScreen");
+  const dashboard = document.getElementById("dashboard");
+  const discordId = document.getElementById("discordId");
+  const loginBtn = document.getElementById("loginBtn");
+  const errorBox = document.getElementById("errorBox");
+
+  function showDashboard(){
+    loginScreen.style.display = "none";
+    dashboard.style.display = "block";
+  }
+
+  function login(){
+    const id = discordId.value.trim();
+    const allowed = Array.isArray(window.DISCORD_IDS_AUTORISES)
+      ? window.DISCORD_IDS_AUTORISES.map(String)
+      : [];
+
+    if(allowed.includes(id)){
+      sessionStorage.setItem("medical_access", "true");
+      showDashboard();
+      errorBox.style.display = "none";
+    }else{
+      errorBox.style.display = "block";
+    }
+  }
+
+  loginBtn.addEventListener("click", login);
+  discordId.addEventListener("keydown", e => {
+    if(e.key === "Enter") login();
+  });
+
+  document.getElementById("logoutBtn").addEventListener("click", () => {
+    sessionStorage.removeItem("medical_access");
+    location.reload();
+  });
+
+  if(sessionStorage.getItem("medical_access") === "true"){
+    showDashboard();
+  }
+
+  function updateTime(){
+    document.getElementById("time").textContent =
+      new Intl.DateTimeFormat("fr-FR", {
+        timeZone:"Europe/Paris",
+        hour:"2-digit",
+        minute:"2-digit",
+        second:"2-digit"
+      }).format(new Date());
+  }
+  updateTime();
+  setInterval(updateTime,1000);
+
+  /*
+    Le compteur FiveM ne peut pas être récupéré de manière fiable uniquement
+    depuis GitHub Pages. Cette interface est prête à recevoir les données
+    lorsque tu disposeras d'une source publique/API côté serveur.
+  */
+</script>
+</body>
+</html>
