@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Générateur de compte rendu — V2</title>
+
+<style>
+:root{
+    --bg:#080c13;
+    --panel:#111823;
+    --panel2:#0c121c;
+    --border:#273345;
+    --text:#edf2f7;
+    --muted:#8e9bad;
+    --blue:#2563eb;
+    --blue2:#3b82f6;
+    --danger:#dc2626;
+    --success:#22c55e;
+}
+
+*{box-sizing:border-box}
+
+body{
+    margin:0;
+    min-height:100vh;
+    font-family:Inter,Segoe UI,Arial,sans-serif;
+    background:
+        radial-gradient(circle at top right,rgba(37,99,235,.12),transparent 35%),
+        var(--bg);
+    color:var(--text);
+}
+
+.container{
+    width:min(1150px,94%);
+    margin:35px auto 60px;
+}
+
+.header{
+    margin-bottom:25px;
+}
+
+.badge{
+    display:inline-block;
+    padding:6px 10px;
+    border:1px solid #31405a;
+    border-radius:999px;
+    color:#9ebcf7;
+    background:#101a2b;
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:.5px;
+}
+
+h1{
+    margin:12px 0 6px;
+    font-size:30px;
+}
+
+.subtitle{
+    color:var(--muted);
+}
+
+.card{
+    background:rgba(17,24,35,.94);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:22px;
+    margin-bottom:18px;
+    box-shadow:0 10px 30px rgba(0,0,0,.22);
+}
+
+.card-title{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin:0 0 18px;
+    font-size:18px;
+}
+
+.number{
+    width:28px;
+    height:28px;
+    display:grid;
+    place-items:center;
+    border-radius:8px;
+    background:#1d4ed8;
+    font-size:13px;
+}
+
+label{
+    display:block;
+    color:#cbd5e1;
+    font-size:14px;
+    font-weight:600;
+    margin:0 0 7px;
+}
+
+input,textarea,select{
+    width:100%;
+    border:1px solid var(--border);
+    border-radius:9px;
+    padding:12px 13px;
+    background:var(--panel2);
+    color:var(--text);
+    font:inherit;
+    outline:none;
+    transition:.15s;
+}
+
+input:focus,textarea:focus,select:focus{
+    border-color:var(--blue2);
+    box-shadow:0 0 0 3px rgba(59,130,246,.12);
+}
+
+textarea{
+    min-height:115px;
+    resize:vertical;
+}
+
+.field{
+    margin-bottom:16px;
+}
+
+.med-grid{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:12px;
+}
+
+.med-card{
+    border:1px solid var(--border);
+    border-radius:11px;
+    background:var(--panel2);
+    padding:14px;
+}
+
+.med-top{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:11px;
+}
+
+.med-top input[type="checkbox"]{
+    width:18px;
+    height:18px;
+    accent-color:var(--blue2);
+}
+
+.med-name{
+    font-weight:700;
+}
+
+.med-card select{
+    margin-top:3px;
+}
+
+.med-card.disabled{
+    opacity:.55;
+}
+
+.med-card:not(.disabled){
+    border-color:#34445e;
+}
+
+.hint{
+    margin-top:12px;
+    color:var(--muted);
+    font-size:12px;
+}
+
+.actions{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-top:18px;
+}
+
+button{
+    border:0;
+    border-radius:9px;
+    padding:12px 18px;
+    font:inherit;
+    font-weight:700;
+    cursor:pointer;
+    transition:.15s;
+}
+
+.primary{
+    background:var(--blue);
+    color:white;
+}
+
+.primary:hover{background:#1d4ed8}
+
+.secondary{
+    background:#273244;
+    color:white;
+}
+
+.secondary:hover{background:#344156}
+
+.danger{
+    background:#48171a;
+    color:#fecaca;
+    border:1px solid #702126;
+}
+
+.danger:hover{background:#651d22}
+
+.output{
+    position:relative;
+}
+
+.output-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:15px;
+    margin-bottom:12px;
+}
+
+.output-head .card-title{
+    margin:0;
+}
+
+#resultat{
+    min-height:260px;
+    padding:20px;
+    border:1px solid var(--border);
+    border-radius:10px;
+    background:#070b11;
+    white-space:pre-wrap;
+    line-height:1.7;
+    font-size:14px;
+    color:#e7edf6;
+}
+
+.empty{
+    color:#69778b;
+}
+
+.toast{
+    position:fixed;
+    right:22px;
+    bottom:22px;
+    background:#16231b;
+    border:1px solid #285b39;
+    color:#bbf7d0;
+    padding:12px 16px;
+    border-radius:9px;
+    opacity:0;
+    transform:translateY(10px);
+    pointer-events:none;
+    transition:.2s;
+}
+
+.toast.show{
+    opacity:1;
+    transform:translateY(0);
+}
+
+
+.bilan-grid{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:12px;
+}
+
+.bilan-group{
+    border:1px solid var(--border);
+    border-radius:11px;
+    background:var(--panel2);
+    padding:14px;
+}
+
+.bilan-group h3{
+    margin:0 0 12px;
+    font-size:14px;
+    color:#e5edf8;
+}
+
+.check{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    padding:7px 5px;
+    margin:0;
+    font-weight:500;
+    cursor:pointer;
+    border-radius:6px;
+}
+
+.check:hover{
+    background:#151e2b;
+}
+
+.check input{
+    width:17px;
+    height:17px;
+    margin:0;
+    accent-color:var(--blue2);
+}
+
+@media(max-width:760px){
+    .med-grid{grid-template-columns:1fr}
+    .output-head{align-items:flex-start;flex-direction:column}
+    h1{font-size:25px}
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <header class="header">
+        <span class="badge">COMPTE RENDU • SAMU FRRP • V1</span>
+        <h1>Générateur de compte rendu</h1>
+        <div class="subtitle">
+            Formulaire sombre pour générer rapidement un compte rendu propre et structuré.
+        </div>
+    </header>
+
+    <section class="card">
+        <h2 class="card-title">
+            <span class="number">1</span>
+            État de la personne
+        </h2>
+
+        <div class="field">
+            <label for="probleme">Ce qu'a la personne ?</label>
+            <input id="probleme"
+                   list="problemes"
+                   placeholder="Ex. fracture, hématome, douleur, fièvre...">
+
+            <datalist id="problemes">
+                <option value="Fracture">
+                <option value="Hématome">
+                <option value="Douleur">
+                <option value="Fièvre">
+                <option value="Plaie">
+                <option value="Brûlure">
+                <option value="Traumatisme">
+                <option value="Malaise">
+                <option value="Difficulté respiratoire">
+                <option value="Perte de connaissance">
+                <option value="Arrêt cardio-respiratoire">
+                <option value="Blessure par Balle">
+                <option value="Choc">
+            </datalist>
+        </div>
+
+        <div class="field">
+            <label for="details">Précisions</label>
+            <textarea id="details"
+                      placeholder="Ajoutez les informations importantes concernant la situation..."></textarea>
+        </div>
+    </section>
+
+    <section class="card">
+        <h2 class="card-title">
+            <span class="number">2</span>
+            Réanimation & transport
+        </h2>
+
+        <div class="bilan-grid">
+            <div class="bilan-group">
+                <h3></h3>
+                <div clDéfibrillationass="field">
+                    <label for="defib-count">Nombre de chocs / coups de défibrillateur</label>
+                    <select id="defib-count">
+                        <option value="">Aucun</option>
+                        <option>1 choc</option>
+                        <option>2 chocs</option>
+                        <option>3 chocs</option>
+                        <option>4 chocs</option>
+                        <option>5 chocs</option>
+                        <option>6 chocs</option>
+                        <option>7 chocs</option>
+                        <option>8 chocs</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="bilan-group">
+                <h3>Transport</h3>
+                <div class="field">
+                    <label for="transport">Destination</label>
+                    <select id="transport">
+                        <option value="">Pas de transport</option>
+                        <option>Transport au CHU</option>
+                        <option>Transport au CHU — urgence</option>
+                        <option>Transport au CHU — surveillance</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="hint">
+            Les informations sélectionnées seront ajoutées automatiquement au compte rendu.
+        </div>
+    </section>
+
+    <section class="card">
+        <h2 class="card-title">
+            <span class="number">3</span>
+            Médicaments administrés
+        </h2>
+
+        <div class="med-grid">
+
+            <div class="med-card disabled">
+                <div class="med-top">
+                    <input type="checkbox" id="med-adrenaline">
+                    <label class="med-name" for="med-adrenaline">Adrénaline</label>
+                </div>
+                <select id="dose-adrenaline" disabled>
+                    <option value="">Sélectionner une dose</option>
+                    <option>0,25 mg</option>
+                    <option>0,5 mg</option>
+                    <option>1 mg IV/IO</option>
+                </select>
+                <input type="text" id="precise-adrenaline" placeholder="Dose précise injectée (ex. 1 mg IV/IO)" disabled style="margin-top:8px;">
+
+            </div>
+
+            <div class="med-card disabled">
+                <div class="med-top">
+                    <input type="checkbox" id="med-propofol">
+                    <label class="med-name" for="med-propofol">Propofol</label>
+                </div>
+                <select id="dose-propofol" disabled>
+                    <option value="">Sélectionner une dose</option>
+                    <option>50 mg</option>
+                    <option>100 mg</option>
+                    <option>150 mg</option>
+                    <option>200 mg</option>
+                </select>
+                <input type="text" id="precise-propofol" placeholder="Dose précise injectée (ex. 1 mg IV/IO)" disabled style="margin-top:8px;">
+
+            </div>
+
+            <div class="med-card disabled">
+                <div class="med-top">
+                    <input type="checkbox" id="med-ringer">
+                    <label class="med-name" for="med-ringer">Ringer lactate</label>
+                </div>
+                <select id="dose-ringer" disabled>
+                    <option value="">Sélectionner une dose</option>
+                    <option>250 ml</option>
+                    <option>500 ml</option>
+                    <option>1000 ml</option>
+                </select>
+                <input type="text" id="precise-ringer" placeholder="Dose précise injectée (ex. 1 mg IV/IO)" disabled style="margin-top:8px;">
+
+            </div>
+
+            <div class="med-card disabled">
+                <div class="med-top">
+                    <input type="checkbox" id="med-g5">
+                    <label class="med-name" for="med-g5">G5 (glucose 5 %)</label>
+                </div>
+                <select id="dose-g5" disabled>
+                    <option value="">Sélectionner une dose</option>
+                    <option>250 ml</option>
+                    <option>500 ml</option>
+                    <option>1000 ml</option>
+                </select>
+                <input type="text" id="precise-g5" placeholder="Dose précise injectée (ex. 1 mg IV/IO)" disabled style="margin-top:8px;">
+
+            </div>
+
+            <div class="med-card disabled">
+                <div class="med-top">
+                    <input type="checkbox" id="med-amiodarone">
+                    <label class="med-name" for="med-amiodarone">Amiodarone</label>
+                </div>
+                <select id="dose-amiodarone" disabled>
+                    <option value="">Sélectionner une dose</option>
+                    <option>150 mg</option>
+                    <option>300 mg</option>
+                </select>
+                <input type="text" id="precise-amiodarone" placeholder="Dose précise injectée (ex. 1 mg IV/IO)" disabled style="margin-top:8px;">
+
+            </div>
+
+            <div class="med-card disabled">
+                <div class="med-top">
+                    <input type="checkbox" id="med-modafinil">
+                    <label class="med-name" for="med-modafinil">Modafinil</label>
+                </div>
+                <select id="dose-modafinil" disabled>
+                    <option value="">Sélectionner une dose</option>
+                    <option>100 mg</option>
+                    <option>200 mg</option>
+                    <option>400 mg</option>
+                </select>
+                <input type="text" id="precise-modafinil" placeholder="Dose précise injectée (ex. 1 mg IV/IO)" disabled style="margin-top:8px;">
+
+            </div>
+
+        </div>
+
+        <div class="hint">
+            Cochez un médicament puis sélectionnez la dose administrée.
+            La dose choisie apparaîtra automatiquement dans le compte rendu.
+        </div>
+    </section>
+
+    <section class="card">
+        <h2 class="card-title">
+            <span class="number">4</span>
+            Observation concernant la victime
+        </h2>
+
+        <div class="bilan-grid">
+
+            <div class="bilan-group">
+                <h3>État général</h3>
+                <label class="check"><input type="checkbox" value="Conscient" data-group="etat"> Conscient</label>
+                <label class="check"><input type="checkbox" value="Inconscient" data-group="etat"> Inconscient</label>
+                <label class="check"><input type="checkbox" value="Confus" data-group="etat"> Confus</label>
+                <label class="check"><input type="checkbox" value="Somnolent" data-group="etat"> Somnolent</label>
+                <label class="check"><input type="checkbox" value="Agité" data-group="etat"> Agité</label>
+                <label class="check"><input type="checkbox" value="Coopératif" data-group="etat"> Coopératif</label>
+                <label class="check"><input type="checkbox" value="Non coopératif" data-group="etat"> Non coopératif</label>
+                <label class="check"><input type="checkbox" value="Anxieux" data-group="etat"> Anxieux</label>
+                <label class="check"><input type="checkbox" value="Calme" data-group="etat"> Calme</label>
+            </div>
+
+            <div class="bilan-group">
+                <h3>Respiration</h3>
+                <label class="check"><input type="checkbox" value="Respiration normale" data-group="respiration"> Respiration normale</label>
+                <label class="check"><input type="checkbox" value="Respiration rapide" data-group="respiration"> Respiration rapide</label>
+                <label class="check"><input type="checkbox" value="Respiration lente" data-group="respiration"> Respiration lente</label>
+                <label class="check"><input type="checkbox" value="Difficulté respiratoire" data-group="respiration"> Difficulté respiratoire</label>
+                <label class="check"><input type="checkbox" value="Respiration irrégulière" data-group="respiration"> Respiration irrégulière</label>
+                <label class="check"><input type="checkbox" value="Absence de respiration" data-group="respiration"> Absence de respiration</label>
+            </div>
+
+            <div class="bilan-group">
+                <h3>Circulation</h3>
+                <label class="check"><input type="checkbox" value="Pouls présent" data-group="circulation"> Pouls présent</label>
+                <label class="check"><input type="checkbox" value="Pouls rapide" data-group="circulation"> Pouls rapide</label>
+                <label class="check"><input type="checkbox" value="Pouls lent" data-group="circulation"> Pouls lent</label>
+                <label class="check"><input type="checkbox" value="Pouls irrégulier" data-group="circulation"> Pouls irrégulier</label>
+                <label class="check"><input type="checkbox" value="Tension normale" data-group="circulation"> Tension normale</label>
+                <label class="check"><input type="checkbox" value="Hypotension" data-group="circulation"> Hypotension</label>
+                <label class="check"><input type="checkbox" value="Hypertension" data-group="circulation"> Hypertension</label>
+                <label class="check"><input type="checkbox" value="Pâleur" data-group="circulation"> Pâleur</label>
+                <label class="check"><input type="checkbox" value="Cyanose" data-group="circulation"> Cyanose</label>
+            </div>
+
+            <div class="bilan-group">
+                <h3>Observation physique</h3>
+                <label class="check"><input type="checkbox" value="Aucune lésion apparente" data-group="physique"> Aucune lésion apparente</label>
+                <label class="check"><input type="checkbox" value="Plaie" data-group="physique"> Plaie</label>
+                <label class="check"><input type="checkbox" value="Saignement" data-group="physique"> Saignement</label>
+                <label class="check"><input type="checkbox" value="Hématome" data-group="physique"> Hématome</label>
+                <label class="check"><input type="checkbox" value="Gonflement" data-group="physique"> Gonflement</label>
+                <label class="check"><input type="checkbox" value="Déformation" data-group="physique"> Déformation</label>
+                <label class="check"><input type="checkbox" value="Brûlure" data-group="physique"> Brûlure</label>
+                <label class="check"><input type="checkbox" value="Fracture suspectée" data-group="physique"> Fracture suspectée</label>
+                <label class="check"><input type="checkbox" value="Douleur apparente" data-group="physique"> Douleur apparente</label>
+            </div>
+
+            <div class="bilan-group">
+                <h3>Saignement</h3>
+                <label class="check"><input type="checkbox" value="Aucun saignement" data-group="saignement"> Aucun saignement</label>
+                <label class="check"><input type="checkbox" value="Saignement léger" data-group="saignement"> Saignement léger</label>
+                <label class="check"><input type="checkbox" value="Saignement modéré" data-group="saignement"> Saignement modéré</label>
+                <label class="check"><input type="checkbox" value="Saignement important" data-group="saignement"> Saignement important</label>
+                <label class="check"><input type="checkbox" value="Hémorragie contrôlée" data-group="saignement"> Hémorragie contrôlée</label>
+                <label class="check"><input type="checkbox" value="Hémorragie non contrôlée" data-group="saignement"> Hémorragie non contrôlée</label>
+            </div>
+
+            <div class="bilan-group">
+                <h3>Mobilité</h3>
+                <label class="check"><input type="checkbox" value="Mobilité normale" data-group="mobilite"> Mobilité normale</label>
+                <label class="check"><input type="checkbox" value="Mobilité réduite" data-group="mobilite"> Mobilité réduite</label>
+                <label class="check"><input type="checkbox" value="Incapacité à bouger un membre" data-group="mobilite"> Incapacité à bouger un membre</label>
+                <label class="check"><input type="checkbox" value="Difficulté à se déplacer" data-group="mobilite"> Difficulté à se déplacer</label>
+                <label class="check"><input type="checkbox" value="Immobilisé" data-group="mobilite"> Immobilisé</label>
+            </div>
+
+        </div>
+
+        <div class="field" style="margin-top:16px;">
+            <label for="observation">Observation complémentaire</label>
+            <textarea id="observation" placeholder="Ajoutez une observation supplémentaire..."></textarea>
+        </div>
+
+        <div class="actions">
+            <button class="primary" onclick="generer()">Générer le compte rendu</button>
+            <button class="secondary" onclick="copier()">Copier le compte rendu</button>
+            <button class="danger" onclick="resetForm()">Réinitialiser</button>
+        </div>
+    </section>
+
+    <section class="card output">
+        <div class="output-head">
+            <h2 class="card-title">
+                <span class="number">5</span>
+                Compte rendu généré
+            </h2>
+            <button class="secondary" onclick="copier()">Copier</button>
+        </div>
+
+        <div id="resultat" class="empty">
+Votre compte rendu apparaîtra ici.
+        </div>
+    </section>
+
+</div>
+
+<div id="toast" class="toast">Compte rendu copié !</div>
+
+<script>
+const medications = [
+    ["med-adrenaline","dose-adrenaline","Adrénaline"],
+    ["med-propofol","dose-propofol","Propofol"],
+    ["med-ringer","dose-ringer","Ringer lactate"],
+    ["med-g5","dose-g5","G5 (glucose 5 %)"],
+    ["med-amiodarone","dose-amiodarone","Amiodarone"],
+    ["med-modafinil","dose-modafinil","Modafinil"]
+];
+
+function setupMedication(id, doseId){
+    const checkbox = document.getElementById(id);
+    const dose = document.getElementById(doseId);
+    const precise = document.getElementById("precise-" + doseId.replace("dose-", ""));
+    const card = checkbox.closest(".med-card");
+
+    checkbox.addEventListener("change", () => {
+        dose.disabled = !checkbox.checked;
+        if (precise) precise.disabled = !checkbox.checked;
+        card.classList.toggle("disabled", !checkbox.checked);
+
+        if(!checkbox.checked){
+            dose.value = "";
+            if (precise) precise.value = "";
+        }
+    });
+}
+
+medications.forEach(([id,doseId]) => setupMedication(id,doseId));
+
+function getMedicaments(){
+    return medications
+        .filter(([id]) => document.getElementById(id).checked)
+        .map(([id,doseId,name]) => {
+            const dose = document.getElementById(doseId).value;
+            const preciseEl = document.getElementById("precise-" + doseId.replace("dose-", ""));
+            const precise = preciseEl ? preciseEl.value.trim() : "";
+            return {name, dose, precise};
+        });
+}
+
+function getBilan(){
+    const groups = [
+        ["État général","etat"],
+        ["Respiration","respiration"],
+        ["Circulation","circulation"],
+        ["Observation physique","physique"],
+        ["Saignement","saignement"],
+        ["Mobilité","mobilite"]
+    ];
+
+    return groups.map(([title, group]) => {
+        const values = [...document.querySelectorAll(`input[data-group="${group}"]:checked`)]
+            .map(input => input.value);
+
+        return {title, values};
+    }).filter(group => group.values.length);
+}
+
+function generer(){
+    const probleme = document.getElementById("probleme").value.trim();
+    const details = document.getElementById("details").value.trim();
+    const observation = document.getElementById("observation").value.trim();
+    const defib = document.getElementById("defib-count").value;
+    const transport = document.getElementById("transport").value;
+    const meds = getMedicaments();
+    const bilan = getBilan();
+
+    const lignes = [];
+
+    lignes.push("COMPTE RENDU DE PRISE EN CHARGE");
+    lignes.push("");
+    lignes.push("CE QU'A LA PERSONNE :");
+    lignes.push(probleme || "Non renseigné");
+
+    if(details){
+        lignes.push("");
+        lignes.push("PRÉCISIONS :");
+        lignes.push(details);
+    }
+
+    lignes.push("");
+    lignes.push("RÉANIMATION & TRANSPORT :");
+    lignes.push("Défibrillation : " + (defib || "Aucun choc renseigné"));
+    lignes.push("Transport : " + (transport || "Pas de transport renseigné"));
+
+    lignes.push("");
+    lignes.push("MÉDICAMENTS ADMINISTRÉS :");
+
+    if(meds.length === 0){
+        lignes.push("Aucun médicament administré.");
+    } else {
+        meds.forEach(med => {
+            lignes.push("• " + med.name + (med.dose ? " : " + med.dose : " : Dose non renseignée"));
+        });
+    }
+
+    lignes.push("");
+    lignes.push("OBSERVATION CONCERNANT LA VICTIME :");
+
+    if(bilan.length === 0 && !observation){
+        lignes.push("Aucune observation renseignée.");
+    } else {
+        bilan.forEach(group => {
+            lignes.push("");
+            lignes.push(group.title + " :");
+            group.values.forEach(value => lignes.push("• " + value));
+        });
+
+        if(observation){
+            lignes.push("");
+            lignes.push("Observation complémentaire :");
+            lignes.push(observation);
+        }
+    }
+
+    const result = document.getElementById("resultat");
+    result.textContent = lignes.join("\n");
+    result.classList.remove("empty");
+}
+
+async function copier(){
+    const result = document.getElementById("resultat");
+    const texte = result.textContent.trim();
+
+    if(!texte || texte === "Votre compte rendu apparaîtra ici."){
+        return;
+    }
+
+    try{
+        await navigator.clipboard.writeText(texte);
+        showToast();
+    }catch(e){
+        const area = document.createElement("textarea");
+        area.value = texte;
+        document.body.appendChild(area);
+        area.select();
+        document.execCommand("copy");
+        area.remove();
+        showToast();
+    }
+}
+
+function showToast(){
+    const toast = document.getElementById("toast");
+    toast.classList.add("show");
+    setTimeout(() => toast.classList.remove("show"), 1800);
+}
+
+function resetForm(){
+    document.getElementById("probleme").value = "";
+    document.getElementById("details").value = "";
+    document.getElementById("observation").value = "";
+    document.getElementById("defib-count").value = "";
+    document.getElementById("transport").value = "";
+
+    document.querySelectorAll('input[data-group]').forEach(input => {
+        input.checked = false;
+    });
+
+    medications.forEach(([id,doseId]) => {
+        const checkbox = document.getElementById(id);
+        const dose = document.getElementById(doseId);
+        const precise = document.getElementById("precise-" + doseId.replace("dose-", ""));
+        const card = checkbox.closest(".med-card");
+
+        checkbox.checked = false;
+        dose.value = "";
+        dose.disabled = true;
+        if (precise) {
+            precise.value = "";
+            precise.disabled = true;
+        }
+        card.classList.add("disabled");
+    });
+
+    const result = document.getElementById("resultat");
+    result.textContent = "Votre compte rendu apparaîtra ici.";
+    result.classList.add("empty");
+}
+</script>
+
+</body>
+</html>

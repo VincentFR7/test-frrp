@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Service Médical — France Roleplay</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,Helvetica,sans-serif;background:#080d14;color:#fff;min-height:100vh}
+header{height:74px;border-bottom:1px solid #1d2836;background:#0b111a;display:flex;align-items:center;justify-content:space-between;padding:0 38px}
+.brand{display:flex;align-items:center;gap:13px}.brand img{width:42px;height:42px;border-radius:9px;object-fit:contain}.brand b{font-size:17px}.brand small{display:block;color:#77869a;margin-top:3px}
+.user{display:flex;align-items:center;gap:12px}.user img{width:34px;height:34px;border-radius:50%}.logout{border:1px solid #2a3747;background:#121b27;color:#dce5ef;padding:9px 13px;border-radius:7px;cursor:pointer}
+main{max-width:1200px;margin:auto;padding:42px 24px}.welcome{margin-bottom:30px}.welcome h1{font-size:30px;margin-bottom:7px}.welcome p{color:#8291a5}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.card{background:#101923;border:1px solid #1d2937;border-radius:13px;padding:21px;min-height:142px}.label{color:#8291a5;font-size:13px;margin-bottom:21px}.value{font-size:27px;font-weight:700}.sub{color:#667588;font-size:12px;margin-top:7px}.green{color:#38d98a}.red{color:#ff6875}
+.server{margin-top:18px;background:#101923;border:1px solid #1d2937;border-radius:13px;padding:23px}.server-head{display:flex;justify-content:space-between;margin-bottom:18px}.server-head h2{font-size:17px}.state{color:#38d98a;font-size:13px}.dot{display:inline-block;width:8px;height:8px;background:#38d98a;border-radius:50%;margin-right:7px}
+.server-row{background:#0c141e;border-radius:9px;padding:17px;display:flex;justify-content:space-between;align-items:center}.ip{color:#667588;font-size:12px;margin-top:5px}.count{font-size:22px;font-weight:700}
+.actions{margin-top:18px;display:grid;grid-template-columns:repeat(2,1fr);gap:16px}.action{display:block;text-decoration:none;color:white;background:#101923;border:1px solid #1d2937;border-radius:13px;padding:21px;transition:.2s}.action:hover{border-color:#315b7e;transform:translateY(-2px)}.action h3{font-size:15px;margin-bottom:6px}.action p{color:#748397;font-size:12px}
+footer{text-align:center;color:#536174;font-size:11px;padding:30px}
+#login{position:fixed;inset:0;background:#080d14;display:flex;align-items:center;justify-content:center;z-index:99}.login-box{width:min(420px,calc(100% - 32px));text-align:center;background:#101923;border:1px solid #1d2937;border-radius:15px;padding:38px}.login-box img{width:62px;height:62px;border-radius:13px;margin-bottom:20px}.login-box h1{font-size:24px;margin-bottom:8px}.login-box p{color:#8291a5;font-size:13px;line-height:1.5;margin-bottom:25px}.discord{width:100%;border:0;background:#5865f2;color:#fff;padding:13px;border-radius:8px;font-weight:700;cursor:pointer}.error{display:none;color:#ff6875;font-size:12px;margin-top:15px}
+@media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:600px){header{padding:0 16px}.brand div{display:none}.grid,.actions{grid-template-columns:1fr}.server-row{align-items:flex-start;gap:15px;flex-direction:column}}
+</style>
+</head>
+<body>
+
+<div id="login">
+  <div class="login-box">
+    <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Imgur%20icon.svg" alt="Logo Imgur">
+    <h1>Service Médical</h1>
+    <p>Connectez-vous avec Discord pour accéder au tableau de bord France Roleplay.</p>
+    <button class="discord" onclick="loginDiscord()">Se connecter avec Discord</button>
+    <div id="loginError" class="error">Votre compte Discord n'est pas autorisé.</div>
+  </div>
+</div>
+
+<div id="app" style="display:none">
+<header>
+  <div class="brand">
+    <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Imgur%20icon.svg" alt="Logo">
+    <div><b>Service Médical</b><small>France Roleplay</small></div>
+  </div>
+  <div class="user" id="userArea"></div>
+</header>
+
+<main>
+  <section class="welcome">
+    <h1>Tableau de bord</h1>
+    <p>État du serveur et présence des effectifs médicaux.</p>
+  </section>
+
+  <section class="grid">
+    <div class="card"><div class="label">État du serveur</div><div id="serverStatus" class="value green">Connexion...</div><div class="sub">Serveur FiveM</div></div>
+    <div class="card"><div class="label">Joueurs présents</div><div id="players" class="value">-- / --</div><div class="sub">Joueurs actuellement connectés</div></div>
+    <div class="card"><div class="label">Effectifs médicaux</div><div id="medical" class="value green">--</div><div class="sub">Effectifs actuellement en jeu</div></div>
+    <div class="card"><div class="label">Heure française</div><div id="clock" class="value">--:--:--</div><div class="sub">Europe / Paris</div></div>
+  </section>
+
+  <section class="server">
+    <div class="server-head"><h2>France Roleplay</h2><div id="state" class="state"><span class="dot"></span>En ligne</div></div>
+    <div class="server-row">
+      <div><b>Serveur FiveM</b><div class="ip" id="serverAddress">francerplb.shieldcore.io:443</div></div>
+      <div id="count" class="count">-- / --</div>
+    </div>
+  </section>
+
+  <section class="actions">
+    <a class="action" href="rapport.html"><h3>Compte rendu d'intervention</h3><p>Ouvrir le formulaire de compte rendu.</p></a>
+    <a class="action" href="#" onclick="return false"><h3>Effectifs médicaux</h3><p>Afficher les personnels médicaux actuellement en jeu.</p></a>
+  </section>
+</main>
+<footer>France Roleplay — Service Médical<br><span id="update">Dernière actualisation : --</span></footer>
+</div>
+
+<script src="ID.html"></script>
+<script>
+const CONFIG={
+  authEndpoint:"/auth/discord",
+  sessionEndpoint:"/api/session",
+  serverEndpoint:"/api/server",
+  serverAddress:"francerplb.shieldcore.io:443"
+};
+
+function loginDiscord(){
+  window.location.href=CONFIG.authEndpoint;
+}
+
+async function checkSession(){
+  try{
+    const r=await fetch(CONFIG.sessionEndpoint,{credentials:"include"});
+    if(!r.ok) throw new Error();
+    const u=await r.json();
+    if(!u.authenticated) throw new Error();
+    document.getElementById("login").style.display="none";
+    document.getElementById("app").style.display="block";
+    if(u.avatar) document.getElementById("userArea").innerHTML=`<img src="${u.avatar}" alt=""><span>${escapeHtml(u.name||"Compte Discord")}</span><button class="logout" onclick="logout()">Déconnexion</button>`;
+    else document.getElementById("userArea").innerHTML=`<span>${escapeHtml(u.name||"Compte Discord")}</span><button class="logout" onclick="logout()">Déconnexion</button>`;
+    updateServer();
+  }catch(e){
+    document.getElementById("login").style.display="flex";
+    document.getElementById("app").style.display="none";
+  }
+}
+
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function logout(){window.location.href="/auth/logout"}
+
+function clock(){
+  document.getElementById("clock").textContent=new Intl.DateTimeFormat("fr-FR",{timeZone:"Europe/Paris",hour:"2-digit",minute:"2-digit",second:"2-digit"}).format(new Date());
+}
+setInterval(clock,1000);clock();
+
+async function updateServer(){
+  try{
+    const r=await fetch(CONFIG.serverEndpoint,{credentials:"include",cache:"no-store"});
+    if(!r.ok) throw new Error();
+    const d=await r.json();
+    document.getElementById("serverStatus").textContent=d.online?"En ligne":"Hors ligne";
+    document.getElementById("serverStatus").className="value "+(d.online?"green":"red");
+    document.getElementById("state").innerHTML=d.online?'<span class="dot"></span>En ligne':'<span class="dot" style="background:#ff6875"></span>Hors ligne';
+    const text=(d.players??0)+" / "+(d.maxPlayers??0);
+    document.getElementById("players").textContent=text;
+    document.getElementById("count").textContent=text;
+    document.getElementById("medical").textContent=d.medicalPlayers??0;
+    document.getElementById("update").textContent="Dernière actualisation : "+new Date().toLocaleTimeString("fr-FR");
+  }catch(e){
+    document.getElementById("serverStatus").textContent="Indisponible";
+    document.getElementById("serverStatus").className="value red";
+  }
+}
+
+checkSession();
+setInterval(updateServer,30000);
+</script>
+</body>
+</html>
